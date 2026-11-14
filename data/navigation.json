@@ -11,7 +11,7 @@
     "footer": "Designed for integrated UPSC Prelims and GS-II Mains preparation."
   },
   "interface": {
-    "primaryNavigation": "home-only",
+    "primaryNavigation": "module-dropdown",
     "secondaryNavigation": "module-chapters",
     "homeLayout": "grouped-module-list",
     "moduleLayout": "chapter-directory",
