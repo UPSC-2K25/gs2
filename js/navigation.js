@@ -49,22 +49,34 @@
   // 2. Shared utility functions
   // ---------------------------------------------------------
 
-  const normalizePath = (path) => {
-    let decodedPath = path;
+  
+const normalizePath = (path) => {
+  let decodedPath = path;
 
-    try {
-      decodedPath = decodeURIComponent(path);
-    } catch (error) {
-      console.warn("Navigation: unable to decode path.", path);
+  try {
+    decodedPath = decodeURIComponent(path);
+  } catch (error) {
+    console.warn("Navigation: unable to decode path.", path);
+  }
+
+  let normalized = decodedPath
+    .replace(/\\/g, "/")
+    .replace(/\/+/g, "/");
+
+  // Treat directory URLs as their index.html pages.
+  if (normalized.endsWith("/")) {
+    normalized += "index.html";
+  } else {
+    const lastSegment = normalized.split("/").pop();
+
+    if (!lastSegment.includes(".")) {
+      normalized += "/index.html";
     }
+  }
 
-    return (
-      decodedPath
-        .replace(/\\/g, "/")
-        .replace(/\/+/g, "/")
-        .replace(/\/$/, "") || "/"
-    );
-  };
+  return normalized;
+};
+
 
   const currentPath = normalizePath(window.location.pathname);
 
