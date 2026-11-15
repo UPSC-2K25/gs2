@@ -493,12 +493,13 @@ main blockquote {
 /* Reserve space for the fixed sidebar on module pages. */
 
 body:has(.secondary-navigation) main {
+  width: calc(100% - var(--sidebar-width));
   max-width: none;
   margin-left: var(--sidebar-width);
   padding-right: max(32px, calc((100vw - var(--content-max-width)) / 2));
   padding-left: 36px;
+  min-width: 0;
 }
-
 /* ---------- 8. Breadcrumbs ---------- */
 
 .breadcrumbs {
@@ -730,6 +731,35 @@ body:has(.secondary-navigation) main {
   white-space: nowrap;
   clip-path: inset(50%);
 }
+
+/* Prevent horizontal overflow in chapter content */
+
+main,
+.chapter-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+main table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+main pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+main img,
+main video,
+main iframe {
+  max-width: 100%;
+}
+
 
 /* ---------- 15. Responsive layout ---------- */
 
