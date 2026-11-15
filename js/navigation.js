@@ -405,77 +405,108 @@ const normalizePath = (path) => {
   // 5. Home page module directory
   // ---------------------------------------------------------
 
-  const renderHomeDirectory = (config) => {
-    const interfaceConfig = config.interface || {};
+  
+const renderHomeDirectory = (config) => {
+  const directory = document.querySelector(
+    "[data-module-directory]"
+  );
 
-    const directory = document.querySelector(
-      "[data-module-directory]"
-    );
+  if (!directory) return;
 
-    if (!directory) return;
+  directory.replaceChildren();
 
-    directory.replaceChildren();
+  const wrapper = createElement(
+    "div",
+    "module-table-wrapper"
+  );
 
-    const heading = createElement(
-      "h3",
-      "module-group-heading",
-      "Available Modules"
-    );
+  const table = createElement(
+    "table",
+    "module-directory-table"
+  );
 
-    const moduleList = createElement("ul", "module-list");
+  table.setAttribute(
+    "aria-label",
+    "Available GS-II study modules"
+  );
 
-    (config.sections || []).forEach((section) => {
-      const item = createElement("li", "module-list-item");
+  // Table headings
+  const thead = createElement("thead");
+  const headerRow = createElement("tr");
 
-      const link = createLink(
-        section.label,
-        section.path,
-        "module-directory-link"
-      );
+  [
+    "Module No.",
+    "Module Name",
+    "Description / Coverage",
+    "No. of Chapters"
+  ].forEach((heading) => {
+    const th = createElement("th", "", heading);
+    th.setAttribute("scope", "col");
+    headerRow.appendChild(th);
+  });
 
-      if (
-        interfaceConfig.showModuleNumbers &&
-        section.number
-      ) {
-        link.prepend(
-          createElement(
-            "span",
-            "module-number",
-            section.number
-          )
-        );
+  thead.appendChild(headerRow);
+
+  // Module data from navigation.json
+  const tbody = createElement("tbody");
+
+  (config.sections || []).forEach((section, index) => {
+    const row = createElement("tr");
+
+    const moduleNumber =
+      section.number || String(index + 1).padStart(2, "0");
+
+    const chapterCount = Array.isArray(section.chapters)
+      ? section.chapters.length
+      : 0;
+
+    const values = [
+      moduleNumber,
+      section.label || "—",
+      section.description || "—",
+      chapterCount
+    ];
+
+    values.forEach((value, cellIndex) => {
+      const cell = createElement("td", "", value);
+
+      if (cellIndex === 0) {
+        cell.classList.add("module-table-number");
       }
 
-      item.appendChild(link);
-
-      if (section.description) {
-        item.appendChild(
-          createElement(
-            "p",
-            "module-description",
-            section.description
-          )
-        );
+      if (cellIndex === 1) {
+        cell.classList.add("module-table-name");
       }
 
-      if (
-        interfaceConfig.showChapterCounts &&
-        Array.isArray(section.chapters)
-      ) {
-        item.appendChild(
-          createElement(
-            "span",
-            "module-count",
-            `${section.chapters.length} chapters`
-          )
-        );
+      if (cellIndex === 3) {
+        cell.classList.add("module-table-count");
       }
 
-      moduleList.appendChild(item);
+      row.appendChild(cell);
     });
 
-    directory.append(heading, moduleList);
-  };
+    tbody.appendChild(row);
+  });
+
+  // Graceful fallback if no modules are configured
+  if (!config.sections || config.sections.length === 0) {
+    const row = createElement("tr");
+    const cell = createElement(
+      "td",
+      "",
+      "No modules are currently available."
+    );
+
+    cell.colSpan = 4;
+    row.appendChild(cell);
+    tbody.appendChild(row);
+  }
+
+  table.append(thead, tbody);
+  wrapper.appendChild(table);
+  directory.appendChild(wrapper);
+};
+
 
   // ---------------------------------------------------------
   // 6. Module landing page content
